@@ -1,0 +1,173 @@
+---
+title: "Topic 2 Problem Set Question - Covid"
+output: html_document
+author: Kelly Looman
+---
+
+<style type="text/css">
+  body{
+  font-family: times;
+}
+</style>
+
+#### Preparation
+
+```{r setup, include=TRUE, message = FALSE, warning = FALSE}
+# Load packages used in this session of R
+library(tidyverse)
+library(knitr)
+
+# Set file path to data  
+opts_knit$set(root.dir = "/Users/loomanke/Desktop/Stats_560/Problem_sets/Chapter_2")
+```
+
+---- 
+
+#### 1) Load the data from Covid_by_state_week.rds
+The data is from https://covidtracking.com/data.  It contains weekly state level information related to the covid pandemic.  The variables in our data set are
+
+- state: state abbreviation
+
+- friday: date
+
+- deaths: number of covid deaths in state in that week (the `d' is for difference)
+
+- positives: number of positive covid tests reported in state in that week
+
+- negatives: number of negative covid tests reported in state in that week
+
+```{r tidy = FALSE}
+# Load in Covid by state week data 
+dta = readRDS("Covid_by_state_week.rds")
+# Pull first five lines of data  
+head(dta)
+```
+
+---- 
+
+#### 2)  Add a variable to your data frame called 'pos.pct' that is the percent of tests that were positive in the week
+
+```{r tidy = FALSE}
+
+# Create new variable with total tests 
+dta$test = dta$positives + dta$negatives
+head(dta['test'])
+
+# Find positive percentage of tests
+dta$pos.pct = sprintf("%.2f%%", (dta$positives/dta$test)*100)
+head(dta['pos.pct'])
+```
+
+---- 
+
+#### 3)  Calculate the descriptive statistics (mean, min, max) for the entire data set for the deaths, positive and pos.pct variables.  Are these quantities informative? Why or why not?
+
+```{r tidy = FALSE}
+# Summary of deaths, positive, and pos.pct variables 
+summary(dta['deaths'])
+summary(dta['positives'])
+typeof(dta$pos.pct)
+# sprintf() converts data into a string, and summary() will not output any meaningful results
+# Remove sprintf() from variable 
+dta$pos.pct = (dta$positives/dta$test)*100
+# pos.pct is now a float 
+typeof(dta$pos.pct)
+summary(dta['pos.pct'])
+```
+
+##### These quantities are not particularly helpful. We do not have information on where or when these positive cases or deaths occurred to contextualize the situation. With that being said, the summary is helpful in locating any outliers or data errors that we should investigate further. 
+
+---- 
+
+#### 4)  Which state/weeks are reporting negative deaths?  What should we do about that data?
+```{r tidy = FALSE}
+# Create for loop to identify negative deaths 
+for (i in 1:nrow(dta)){
+    if (dta[i, 'deaths'] < 0) {
+        print((dta[i, ]))
+    }
+}
+
+```
+
+##### On May 25, 2020, CO inputted a value of -29. We most likely would want to remove this observation from our data set. 
+
+---- 
+
+#### 5)  Set all non-sensical negative values to missing.  Report on descriptive statistics again.  Are there any more anomalies to fix?
+
+```{r tidy = FALSE}
+# Create loops to identify observations that are less than zero
+# and assign the observations as NA 
+for (i in 1:nrow(dta)){
+    if (dta[i, 'deaths'] < 0) {
+        dta[i, 'deaths'] = NA
+    }
+}
+
+summary(dta['deaths'])
+```
+
+```{r tidy = FALSE}
+for (i in 1:nrow(dta)){
+    if (dta[i, 'positives'] < 0) {
+        dta[i, 'positives'] = NA
+    }
+}
+
+summary(dta['positives'])
+```
+
+```{r tidy = FALSE}
+# Create a new data set with NA values omitted. 
+df = na.omit(dta)
+# Create pos.pct variable 
+df['pos.pct'] = (df$positives/df$test)*100
+
+for (i in 1:nrow(df)){
+    if (df[i, 'pos.pct'] < 0) {
+        df[i, 'pos.pct'] = NA
+    }
+}
+summary(df['pos.pct'])
+```
+---- 
+
+#### 6)  Create a loop that to produce a data frame that contains the max level of deaths by state and the week in which that happened.  (If a state had multiple weeks with the same max-value of deaths, use only the first week.) Display the first five rows of this data frame.
+
+```{r tidy = FALSE}
+
+# Create a new data frame with NA omitted
+df = na.omit(dta)
+
+# Create a list of states  
+x = unique(dta['state'])
+
+# Create a dataframe
+df_maxdeaths <- data.frame(state=character(),maxdeaths=integer(),friday=as.Date(character()))
+
+
+# Rotate through the state column to go through each unique states
+for (i in x[,"state"]) {
+  # Get current loop's state data frame
+  currState = df[df$state==i,]
+  currState_maxdeaths_value = max(currState$deaths)
+ 
+  # Get all the weeks with maxdeaths
+  currState_maxdeaths_df = currState[currState$deaths==currState_maxdeaths_value, ]
+  currState_maxdeaths_date = as.character(min(currState_maxdeaths_df$friday))
+ 
+  # Append corresponding data ("State", ""MaxDeaths", "Friday")
+  df_maxdeaths[nrow(df_maxdeaths)+1,] <- c(i,currState_maxdeaths_value, currState_maxdeaths_date)  
+ 
+}
+
+# Results
+head(df_maxdeaths)
+```
+
+Note (1): Because missing data will make things complicated, use the `na.omit' command to create and use a data set that has onlyrows for which there are no missing observations. For example: df_completeData = na.omit(df) 
+
+Note (2): Store the date as a character vector using the `as.character' command. 
+
+
