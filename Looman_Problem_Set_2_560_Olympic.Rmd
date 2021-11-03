@@ -1,0 +1,168 @@
+---
+title: "Problem Set Chapter 2 Olympics" 
+output: html_document
+date: "9/5/2021"
+author: Kelly Looman 
+---
+
+<style type="text/css">
+  body{
+  font-family: times;
+}
+</style>
+
+```{r setup, include=TRUE, message = FALSE, warning = FALSE}
+# Load packages used in this session of R
+library(tidyverse)
+library(knitr)
+
+```
+
+```{r tidy = FALSE}
+# Load Olympic data set 
+load("/Users/loomanke/Desktop/Stats_560/Problem_sets/Chapter_2/Ch2_Exercise2_Olympics.RData")
+```
+
+----
+
+### 1) What determines success at the Winter Olympics? Does population matter? Income? Or is it simply a matter of being in a cold place with lots of mountains? Table 2.6 describes variables related to the Winter Olympic Games from 1980 to 2014.
+
+----
+
+**TABLE  2.6:  Variables for Winter Olympics Questions**
+
+- **Variable name**: Description
+
+- **ID**: Unique number for each country in the data set
+
+- **country**: Name of country
+
+- **year**: Year
+
+- **medals**: Total number of combined medals won athletes
+
+- **athletes**: Number of athletes in Olympic delegation
+
+- **GDP**: Gross domestic product (GDP) of country (per capita GDP in $10,000 USD)
+
+- **temp**: Average high temperature (in Fahrenheit) in January if country is in Northern Hemisphere or July if Southern Hemisphere (for largest city) 
+
+- **population**: Population of country (in 100,000) 
+
+- **host**: Equals 1 if host nation and 0 otherwise
+
+---- 
+
+### (a) Summarize the medals, athletes, and GDP data.
+```{r tidy = FALSE}
+# Using summary() pull the min, max, median, mean, and quartiles of the medals, athletes, and GDP variables. 
+summary(dta['medals']) 
+summary(dta['athletes']) 
+summary(dta['GDP']) 
+```
+
+---- 
+
+### (b) List the first five observations for the country, year, medals, athletes, and GDP data.
+```{r tidy = FALSE}
+# head() pulls first five observations of a variable or data frame 
+head(dta$country, n = 5)
+head(dta$year, n = 5)
+head(dta$medals, n = 5)
+head(dta$athletes, n = 5)
+head(dta$GDP, n = 5)
+```
+
+---- 
+
+### (c) How many observations are there for each year?
+```{r tidy = FALSE}
+# Create a table of the year variable 
+table(dta['year'])
+```
+
+---- 
+
+### (d) Produce a scatterplot of medals and the number of athletes. Describe the relationship depicted.
+```{r tidy = FALSE}
+# Create a scatter plot of medals and athletes data. 
+# jitter() adds a small amount of noise to each data point and is helpful in preventing over plotting. 
+# main(): title of the plot
+# xlab(): x-axis label
+# ylab(): y-axis label 
+# xlim() and ylim(): specifies limits for x and y axis respectively 
+# pch(): point type of your data points 
+# cex(): size of each point 
+# col(): color of data points 
+plot(jitter(dta$athletes, 10), jitter(dta$medals,10), 
+       main="Medals and Athletes",
+       xlab="Athletes", 
+       ylab="Medals", 
+       xlim = c(0,227),
+       ylim = c(0,45),
+       pch=1,
+       cex = 1.0,
+       col="gold")
+```
+
+#### There is a positive correlation between the number of medals won and the number of athletes sent to the Games. 
+
+---- 
+
+### (e) Explain any suspicion you might have that other factors might explain the observed relationship between the number of athletes
+
+#### Countries that are able to send more athletes to the Olympics may have greater resources to invest in their athletes in the first place (e.g. training, gear, etc.). Hence, we would need to gather additional data before establishing a causal relationship between number of athletes sent and the number of medals won.
+
+---- 
+
+### (f) Create a scatterplot of medals and GDP. Briefly describe any clear patterns.
+```{r tidy = FALSE}
+# Plot medals won and country's GDP 
+plot(jitter(dta$GDP, 10), jitter(dta$medals,10), 
+     main="Country's GDP per Capita and Medals Won",
+     xlab="GDP per Capita", 
+     ylab="Medals", 
+     pch=1,
+     cex = 1.0,
+     col="gold")
+```
+
+#### It appears that there a number of high income countries that win only a few medals, while there are a number of countries with less GDP per capita that win a significant number of medals.
+
+---- 
+
+### (g) Create a scatterplot of medals and population. Briefly describe any clear patterns.
+```{r tidy = FALSE}
+# Plot medals won and country's population 
+plot(jitter(dta$population, 10), jitter(dta$medals,10), 
+     main="Country's Population and Medals Won",
+     xlab="Population (in 100,000)", 
+     ylab="Medals", 
+     pch=1,
+     cex = 1.0,
+     col="gold")
+```
+
+#### There does not appear to be any strong patterns, though countries with high populations tend to not win as many medals as countries with smaller populations. 
+
+---- 
+
+### (h) Create a scatterplot of medals and temperature. Briefly describe any clear patterns.
+```{r tidy = FALSE}
+# Plot medals won and a country's average temperature
+plot(jitter(dta$temp, 10), jitter(dta$medals,10), 
+     main="Country's Average Temperature and Medals Won",
+     xlab="Average Temperature (Fahrenheit)", 
+     ylab="Medals", 
+     pch=1,
+     cex = 1.0,
+     col="gold")
+```
+
+#### Countries with milder temperatures tend to win more medals than countries with very low or very high temps. 
+
+---- 
+
+
+
+
