@@ -1,0 +1,137 @@
+---
+title: "Problem Set Chapter 2 Height"
+author: "Kelly Looman"
+date: "9/5/2021"
+output: html_document
+---
+
+<style type="text/css">
+  body{
+  font-family: times;
+}
+</style>
+
+```{r setup, include=FALSE}
+# Load packages and data used in this session of R
+library(tidyverse)
+library(knitr)
+load("/Users/loomanke/Desktop/Stats_560/Problem_sets/Chapter_2/Ch2_Exercise3_Height_and_Wages_US.RData")
+```
+
+---- 
+
+#### Persico, Postlewaite, and Silverman (2004) analyzed data from the National Longitudinal Survey of Youth (NLSY) 1979 cohort to assess the relationship between height and wages for white men who were between 14 and 22 years old in 1979. This data set consists of answers from individuals who were asked questions in various years between 1979 and 1996. Here we explore the relationship between height and wages for the full sample that includes men and  women and all races. Table 2.7 describes the variables we use for this question.
+
+---- 
+
+**TABLE  2.7   Variables for Height and Wages Data in the United States**
+
+- **Variable name**: Description
+
+- **wage96**: Hourly wages (in dollars) in 1996
+
+- **height85**: Adult height: height (in inches) measured in 1985
+
+- **height81**: Adolescent height: height (in inches) measured in 1981
+
+- **siblings**: Number of siblings
+
+---- 
+
+### (a) Summarize the wage, height (both height85 and height81), and sibling variables. Discuss briefly.
+
+```{r tidy = FALSE}
+# Using summary() calculate the min, max, median, mean, and quartiles of the adult height (height85), adolescent height (height81), and siblings variables. 
+summary(dta['height85'])
+summary(dta['height81']) 
+summary(dta['siblings']) 
+```
+
+#### The summary function is useful for finding outliers or data errors. For example, the minimum for siblings is -3, which must be an error. 
+
+---- 
+
+### (b) Create a scatterplot of wages and adult height (height85). Discuss any distinctive observations.
+```{r tidy = FALSE}
+# Plot wage and adult height 
+plot(jitter(dta$height85, 10), jitter(dta$wage96, 10), 
+     main="Adult Height and Wages",
+     xlab="Adult Height (Inches)", 
+     ylab="Wages (USD per hour)",
+     pch=1,
+     cex = 1.0,
+     col="darkgreen")
+
+# Plot wage and adult height limiting x scale to $0 to $500 USD per hour. 
+plot(jitter(dta$height85, 10), jitter(dta$wage96, 10), 
+     main="Adult Height and Wages",
+     xlab="Adult Height (Inches)", 
+     ylab="Wages (USD per hour)",
+     ylim = c(0, 500), 
+     pch=1,
+     cex = 1.0,
+     col="darkgreen")
+
+# Plot wage and adult height limiting x scale to $0 to $75 USD per hour. 
+plot(jitter(dta$height85, 10), jitter(dta$wage96, 10), 
+     main="Adult Height and Wages",
+     xlab="Adult Height (Inches)", 
+     ylab="Wages (USD per hour)",
+     ylim = c(0, 75), 
+     pch=1,
+     cex = 1.0,
+     col="darkgreen")
+```
+
+#### In the first plot, the presence of a few outliers (men who made more than $500 per hour), prevented us from viewing any potential trends. Also, we may want to investigate these outliers further to determine whether these values were inputted correctly.  Narrowing our x-axis to individuals who made between $0 and $500 an hour and $0 to $75, we can see the data points more clearly. 
+
+---- 
+
+### (c) Create a scatterplot of wages and adult height that excludes the observations with wages above $500 per hour.
+```{r tidy = FALSE}
+# You could just limit the scale of the y-axis as we did in (b). An alternative solution is to create a new variable without observations with wages above $500 per hour. 
+dta$wage_exclude = ifelse(dta$wage96<500, dta$wage96, NA)
+plot(jitter(dta$height85, 10), jitter(dta$wage_exclude, 10), 
+     main="Adult Height and Wages",
+     xlab="Adult Height (Inches)", 
+     ylab="Wages (USD per hour)",
+     pch=1,
+     cex = 1.0,
+     col="darkgreen")
+```
+
+----
+ 
+### (d) Create a scatterplot of adult height against adolescent height. Identify the set of observations where people’s adolescent height is more than their adult height. Do you think we should use these observations in any future analysis we conduct with this data? Why or why not?
+
+```{r tidy = FALSE}
+# Plot adolescent and adult height data.
+# Abline() plots y=x line through graph. 
+# Jitter() function adds noise to the data points, which leads to an overlap of red and green points. 
+plot(jitter(dta$height81, 10), jitter(dta$height85, 10), 
+     main="Adult Height and Wages",
+     xlab="Adolescent Height (Inches)", 
+     ylab="Adult Height (Inches)",
+     pch=1,
+     cex = 1.0,
+     col=ifelse(dta$height81>dta$height85, "red", "darkgreen")); 
+     abline(0,1)
+
+# Plot adolsecent and adult height data without the jitter() function 
+plot(dta$height81, dta$height85, 
+     main="Adult Height and Wages",
+     xlab="Adolescent Height (Inches)", 
+     ylab="Adult Height (Inches)",
+     pch=1,
+     cex = 1.0,
+     col=ifelse(dta$height81>dta$height85, "red", "darkgreen")); 
+     abline(0,1)
+```
+
+#### I would first run analyses both with and without the "erroneous" data. I would then remove the data where the error margin was larger than more than two or three inches. (It is possible that someone may have lost an inch in height, based on more measuring or what not, but it after a certain point, it is more likely that the data was inputted incorrectly.)
+
+---- 
+
+
+
+
