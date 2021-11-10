@@ -15,7 +15,7 @@ output: html_document
 # Load packages and data used in this session of R
 library(tidyverse)
 library(knitr)
-load("/Users/loomanke/Desktop/Stats_560/Problem_sets/Chapter_2/Ch2_Exercise3_Height_and_Wages_US.RData")
+load("../Data/Ch2_Exercise3_Height_and_Wages_US.RData")
 ```
 
 ---- 
