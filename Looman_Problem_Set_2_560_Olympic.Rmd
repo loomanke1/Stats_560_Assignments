@@ -20,7 +20,7 @@ library(knitr)
 
 ```{r tidy = FALSE}
 # Load Olympic data set 
-load("/Users/loomanke/Desktop/Stats_560/Problem_sets/Chapter_2/Ch2_Exercise2_Olympics.RData")
+load("../Data/Ch2_Exercise2_Olympics.RData")
 ```
 
 ----
