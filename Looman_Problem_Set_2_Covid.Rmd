@@ -18,7 +18,6 @@ library(tidyverse)
 library(knitr)
 
 # Set file path to data  
-opts_knit$set(root.dir = "/Users/loomanke/Desktop/Stats_560/Problem_sets/Chapter_2")
 ```
 
 ---- 
